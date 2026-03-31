@@ -1,4 +1,13 @@
 import SwiftUI
+#if os(iOS) || os(tvOS)
+import UIKit
+#endif
+#if os(macOS)
+import AppKit
+#endif
+#if os(watchOS)
+import WatchKit
+#endif
 
 /// 全屏遮罩 + 按位置摆放内容的弹窗修饰符。
 public struct FullscreenPopupModifier<PopupContent: View>: ViewModifier {
@@ -26,11 +35,13 @@ public struct FullscreenPopupModifier<PopupContent: View>: ViewModifier {
     }
 
     public func body(content: Content) -> some View {
-        content
-            .overlay {
+        let size = fullScreenSize()
+        return content
+            .overlay(alignment: .center) {
                 ZStack {
                     if isPresented {
                         dimmedColor
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                             .ignoresSafeArea()
                             .contentShape(Rectangle())
                             .onTapGesture {
@@ -46,9 +57,25 @@ public struct FullscreenPopupModifier<PopupContent: View>: ViewModifier {
                             .transition(.opacity.combined(with: positionTransition))
                     }
                 }
+                .frame(width: size.width, height: size.height)
                 .animation(animation, value: isPresented)
                 .allowsHitTesting(isPresented)
             }
+    }
+
+    private func fullScreenSize() -> CGSize {
+        #if os(iOS) || os(tvOS)
+        return UIScreen.main.bounds.size
+        #elseif os(macOS)
+        if let screen = NSScreen.main {
+            return screen.frame.size
+        }
+        return CGSize(width: 800, height: 600)
+        #elseif os(watchOS)
+        return WKInterfaceDevice.current().screenBounds.size
+        #else
+        return CGSize(width: 800, height: 600)
+        #endif
     }
 
     @ViewBuilder

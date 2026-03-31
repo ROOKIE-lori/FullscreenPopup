@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'FullscreenPopup'
-  s.version          = '0.1.0'
+  s.version          = '0.1.1'
   s.summary          = 'SwiftUI 全屏遮罩弹层：传入视图与 PopupPosition 即可。'
   s.description      = <<-DESC
     基于 SwiftUI 的全屏弹窗：支持上/中/下与自定义 Alignment，可选遮罩颜色与点击关闭。
